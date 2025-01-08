@@ -52,7 +52,7 @@ class GeneticNN(nn.Module):
             else:
                 patience_counter += 1
                 if patience_counter >= patience:
-                    print(f"Early stopping at epoch {epoch + 1}")
+                    # print(f"Early stopping at epoch {epoch + 1}")
                     break
         
         return self.train_losses, self.validation_losses
@@ -94,6 +94,8 @@ class GeneticNN(nn.Module):
         for i in range(1, len(chromosome) - 1):  # Do not mutate input/output sizes
             if np.random.rand() < mutation_rate:
                 chromosome[i] = 2 ** np.random.randint(1, max_neurons_power + 1)
+        if len(chromosome) > 3 and np.random.rand() < mutation_rate:
+            del chromosome[np.random.randint(1, len(chromosome) - 1)]
         return chromosome
     
     @staticmethod
@@ -109,8 +111,8 @@ class GeneticNN(nn.Module):
     def evaluate_fitness(self, train_loader, val_loader, loss_fn, optimizer, epochs, patience):
         """Evaluate fitness of a chromosome."""
         train_losses, val_losses = self.train_model(train_loader, val_loader, loss_fn, optimizer, epochs, patience)
-        print(len(self.chromosome))
-        return self.validation_losses[-1]-len(self.chromosome)  # Use the final validation loss as the fitness score
+        # print(len(self.chromosome))
+        return self.validation_losses[-1]-(len(self.chromosome)/10)-(np.mean(self.chromosome)/2**7)  # Use the final validation loss as the fitness score
     
     @staticmethod
     def select_parents(population, fitness_scores, num_parents):
