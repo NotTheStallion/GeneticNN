@@ -1,4 +1,5 @@
 from torch import nn
+import torch
 
 
 class GeneticNN(nn.Module):
@@ -19,6 +20,29 @@ class GeneticNN(nn.Module):
         for layer in self.layers:
             x = layer(x)
         return x
+    
+    def train_model(self, x_train, y_train, x_test, y_test, loss_fn, optimizer, epochs):
+        train_losses = []
+        test_losses = []
+        
+        for epoch in range(epochs):
+            optimizer.zero_grad()
+            y_pred = self(x_train)
+            loss = loss_fn(y_pred, y_train)
+            loss.backward()
+            optimizer.step()
+            
+            test_losses.append(self.test_model(x_test, y_test, loss_fn))
+            train_losses.append(loss.item())
+            # print(f"Epoch {epoch + 1}/{epochs}, Loss: {loss.item()}")
+        return train_losses, test_losses
+    
+    def test_model(self, x, y, criterion):
+        with torch.no_grad():
+            y_pred = self(x)
+            loss = criterion(y_pred, y)
+            # print(f"Test Loss: {loss.item()}")
+        return loss.item()
 
 
 if __name__ == "__main__":
