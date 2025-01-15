@@ -112,7 +112,7 @@ class GeneticNN(nn.Module):
         """Evaluate fitness of a chromosome."""
         train_losses, val_losses = self.train_model(train_loader, val_loader, loss_fn, optimizer, epochs, patience)
         # print(len(self.chromosome))
-        return (self.validation_losses[-1]/self.validation_losses[0])-(len(self.chromosome)/10)-(np.mean(self.chromosome)/2**7)  # Use the final validation loss as the fitness score
+        return (-self.validation_losses[-1])-(len(self.chromosome)/10)-(np.mean(self.chromosome)/2**7), train_losses, val_losses  # Use the final validation loss as the fitness score
     
     @staticmethod
     def select_parents(population, fitness_scores, num_parents):
