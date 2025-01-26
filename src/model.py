@@ -52,7 +52,6 @@ class GeneticNN(nn.Module):
             else:
                 patience_counter += 1
                 if patience_counter >= patience:
-                    # print(f"Early stopping at epoch {epoch + 1}")
                     break
         
         return self.train_losses, self.validation_losses
@@ -101,8 +100,6 @@ class GeneticNN(nn.Module):
     @staticmethod
     def crossover(parent1, parent2):
         """Perform single-point crossover."""
-        # if len(parent1) != len(parent2):
-        #     raise ValueError("Parents must have the same length.")
         point = np.random.randint(1, min(len(parent1), len(parent2)))
         child1 = parent1[:point] + parent2[point:]
         child2 = parent2[:point] + parent1[point:]
@@ -111,7 +108,6 @@ class GeneticNN(nn.Module):
     def evaluate_fitness(self, train_loader, val_loader, loss_fn, optimizer, epochs, patience):
         """Evaluate fitness of a chromosome."""
         train_losses, val_losses = self.train_model(train_loader, val_loader, loss_fn, optimizer, epochs, patience)
-        # print(len(self.chromosome))
         return (-self.validation_losses[-1])-(len(self.chromosome)/10)-(np.mean(self.chromosome)/2**7), train_losses, val_losses  # Use the final validation loss as the fitness score
     
     @staticmethod
